@@ -37,12 +37,6 @@ public class SAPGA {
 		mAgents = aAgents;
 		mGeneration = 0;
 		mCntEval = 0;
-		mPopulation = new Population();
-		mGames[0].initializePopulation(mPopulation, aPopulationSize, aMinSize, aMaxSize);
-		for (int i = 0; i < aPopulationSize; ++i) {
-			mPopulation.policy(i).evaluationValue(mGames[i].evaluate(mPopulation.policy(i), mAgents[i]));
-		}
-		mCntEval += aPopulationSize;
 		// パラメータ
 		mPopulationSize = aPopulationSize;
 		mNumOffspring = aNumOffspring;
@@ -50,6 +44,21 @@ public class SAPGA {
 		mMaxSize = aMaxSize;
 		mSelectionR = aSelectionR;
 		mMutationR = aMutationR;
+		// 初期集団の生成と評価
+		mPopulation = new Population();
+		MyGame.initializePopulation(mRandom, mPopulation, aPopulationSize, aMinSize, aMaxSize);
+		// 評価は並列化
+		HashMap<Policy, MyGame> mapGame = new HashMap<>();
+		HashMap<Policy, Agent> mapAgent = new HashMap<>();
+		Policy[] policies = new Policy[aPopulationSize];
+		for (int i = 0; i < mPopulationSize; ++i) {
+			policies[i] = mPopulation.policy(i);
+			mapGame.put(policies[i], mGames[i]);
+			mapAgent.put(policies[i], mAgents[i]);
+		}
+		Stream.of(policies).parallel().forEach(policy -> policy.evaluationValue(mapGame.get(policy).evaluate(policy,
+						mapAgent.get(policy))));
+		mCntEval += aPopulationSize;
 	}
 
 	/**
@@ -117,14 +126,22 @@ public class SAPGA {
 		}
 		// 家族内の最良政策を集団に追加
 		int index = 0;
+		Policy[] bestClones = new Policy[family.length];
+		mapGame.clear();
+		mapAgent.clear();
 		for (Policy[] policies : family) {
 			mPopulation.add(policies[0]);
 			final Policy bestClone = policies[0].clone();
 			mRefresh.refreshPolicy(bestClone, mMutationR);
-			bestClone.evaluationValue(mGames[index].evaluate(bestClone, mAgents[index]));
+			mapGame.put(bestClone, mGames[index]);
+			mapAgent.put(bestClone, mAgents[index]);
 			mPopulation.add(bestClone);
+			bestClones[index] = bestClone;
 			++index;
 		}
+		// 再初期化を行った政策を並列化して評価
+		Stream.of(bestClones).parallel().forEach(policy -> policy.evaluationValue(mapGame.get(policy).evaluate(policy,
+						mapAgent.get(policy))));
 		// 世代数を1増加
 		++mGeneration;
 		// 評価回数を加算

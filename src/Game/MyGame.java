@@ -16,19 +16,15 @@ public class MyGame {
 	 * コンストラクタ．
 	 *
 	 * @param aRandom      乱数生成器
-	 * @param aNum         参照する近傍のヤリの数
 	 * @param aSpearMaxNum 同時に配置するヤリの最大数
 	 * @param aIsDraw      描画が有効かどうか
 	 */
-	public MyGame(final Random aRandom, final int aNum, final int aSpearMaxNum, final boolean aIsDraw) {
+	public MyGame(final Random aRandom, final int aSpearMaxNum, final boolean aIsDraw) {
 		mComp = new Component(aRandom, aSpearMaxNum, aIsDraw);
 		mRandom = aRandom;
 		mState = new State();
-		mState.dimension(aNum * 4 + 2);
-		mActionSize = 5;
-		mStateSize = aNum * 4 + 2;
+		mState.dimension(6);
 		mTimer = 0;
-		mNum = aNum;
 		mIsDraw = aIsDraw;
 	}
 
@@ -90,19 +86,21 @@ public class MyGame {
 	 * 政策の集団を初期化するメソッド．
 	 * SAP-GAの初期集団を生成するために用いる．
 	 *
+	 * @param aRandom  乱数生成器
 	 * @param aPop     集団
 	 * @param aPopSize 集団中の政策の数
 	 * @param aMinSize 政策が持つ事例の最小数
 	 * @param aMaxSize 政策が持つ事例の最大数
 	 */
-	public void initializePopulation(final Population aPop, final int aPopSize, final int aMinSize, final int aMaxSize) {
+	public static void initializePopulation(final Random aRandom, final Population aPop, final int aPopSize, final int
+					aMinSize, final int aMaxSize) {
 		// 集団のサイズを決定
 		aPop.size(aPopSize);
 		// 集団サイズ分だけ政策生成
 		for (int i = 0; i < aPopSize; ++i) {
 			final Policy policy = aPop.policy(i);
 			// 各政策の事例数，事例タイプを決定
-			final int numExemplars = mRandom.nextInt(aMaxSize - aMinSize + 1) + aMinSize;
+			final int numExemplars = aRandom.nextInt(aMaxSize - aMinSize + 1) + aMinSize;
 			policy.size(numExemplars);
 			for (int j = 0; j < numExemplars; ++j) {
 				final Exemplar exemplar = policy.exemplar(j);
@@ -112,10 +110,10 @@ public class MyGame {
 				state.dimension(mStateSize);
 				for (int k = 0; k < mStateSize; ++k) {
 					// 状態の各要素をランダムに初期化
-					state.value(k, mRandom.nextDouble());
+					state.value(k, aRandom.nextDouble());
 				}
 				// 行動をランダムに初期化
-				final int action = mRandom.nextInt(mActionSize);
+				final int action = aRandom.nextInt(mActionSize);
 				exemplar.action(action);
 			}
 		}
@@ -130,7 +128,7 @@ public class MyGame {
 	 * @param aPol   政策
 	 * @param aAgent エージェント
 	 */
-	private void update(final Policy aPol,final  Agent aAgent) {
+	private void update(final Policy aPol, final Agent aAgent) {
 		// 1ステップごとの処理
 		// 行動を選択
 		final int actionInt = aAgent.chooseAction(aPol, mState);
@@ -222,7 +220,7 @@ public class MyGame {
 	 * ゲームの状態を状態ベクトルに反映させるメソッド．
 	 */
 	private void updateState() {
-		for (int i = 0; i < Math.min(mNum, mComp.spearManager().count()); ++i) {
+		for (int i = 0; i < Math.min(1, mComp.spearManager().count()); ++i) {
 			// 近傍のヤリの相対的な位置と、ヤリが進んでいる方向を格納
 			final Vector sub = Vector.sub(mComp.spearManager().spear(i).pos(), mComp.heroManager().hero().pos());
 			final Vector vel = new Vector(mComp.spearManager().spear(i).velocity());
@@ -232,7 +230,7 @@ public class MyGame {
 			mState.value(i * 4 + 2, (vel.value(0) + 1.0) / 2.0);
 			mState.value(i * 4 + 3, (vel.value(1) + 1.0) / 2.0);
 		}
-		for (int i = Math.min(mNum, mComp.spearManager().count()); i < mNum; ++i) {
+		for (int i = Math.min(1, mComp.spearManager().count()); i < 1; ++i) {
 			// 近傍に指定数未満しかヤリがない場合，値を適当に格納
 			mState.value(i * 4, 1.0);
 			mState.value(i * 4 + 1, 1.0);
@@ -241,8 +239,8 @@ public class MyGame {
 		}
 		// 最後にプレイヤーの位置座標を格納
 		final double dev = 500.0;
-		mState.value(mNum * 4, (mComp.heroManager().hero().pos().value(0) - (1000.0 - dev) / 2.0) / dev);
-		mState.value(mNum * 4 + 1, (mComp.heroManager().hero().pos().value(1) - (1000.0 - dev) / 2.0) / dev);
+		mState.value(4, (mComp.heroManager().hero().pos().value(0) - (1000.0 - dev) / 2.0) / dev);
+		mState.value(4 + 1, (mComp.heroManager().hero().pos().value(1) - (1000.0 - dev) / 2.0) / dev);
 	}
 
 	/**
@@ -263,14 +261,12 @@ public class MyGame {
 	private final State mState;
 	// タイマー
 	private int mTimer;
-	// 参照する近傍数
-	private final int mNum;
 	// スコア（合計報酬）
 	private double mTotalReward;
 	// 取りうる行動の数
-	private final int mActionSize;
+	private static final int mActionSize = 5;
 	// 状態ベクトルの次元数
-	private final int mStateSize;
+	private static final int mStateSize = 6;
 	// 描画するかどうか
 	private final boolean mIsDraw;
 }

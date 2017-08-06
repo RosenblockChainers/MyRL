@@ -22,7 +22,7 @@ public class MainSAPGA {
 		mGames = new MyGame[Math.max(mNumOffspring + 2, mPopulationSize)];
 		for (int i = 0; i < Math.max(mNumOffspring + 2, mPopulationSize); ++i) {
 			mAgents[i] = new Agent();
-			mGames[i] = new MyGame(new Random(mRandom.nextLong()), 1, mSpearMaxNum, false);
+			mGames[i] = new MyGame(new Random(mRandom.nextLong()), mSpearMaxNum, false);
 		}
 		mSapga = new SAPGA(mRandom, mGames, mAgents, mPopulationSize, mNumOffspring, mMinSize, mMaxSize, mSelectionR,
 						mMutationR);
@@ -81,7 +81,7 @@ public class MainSAPGA {
 	private final int mSpearMaxNum = 5;  // ヤリの最大数
 	// 乱数シード
 //	private final long mSeed = new Random().nextLong();
-		private final long mSeed = 3059825659401587619L;
+	private final long mSeed = -829656541046703542L;
 	// 乱数生成器
 	private final Random mRandom;
 	// エージェント
