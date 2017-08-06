@@ -15,7 +15,7 @@ public class Viewer {
 	public static void main(final String[] aArgs) {
 		// 乱数生成器
 //		final long seed = new Random().nextLong();
-		final long seed = -6306892710638080131L;
+		final long seed = 8498369561723997333L;
 		System.out.println("seed : " + seed);
 		final Random random = new Random(seed);
 		// エージェント
@@ -23,7 +23,7 @@ public class Viewer {
 		// 政策
 		final Policy policy = new Policy();
 		// ファイル読み込み
-		Logger.readFrom("../log/policy.csv", policy);
+		Logger.readFrom("../log/policy_gen410.csv", policy);
 		// ゲーム
 		final MyGame game = new MyGame(random, 1, 5, true);
 		System.out.println("eval : " + policy.evaluationValue());

@@ -5,7 +5,9 @@ import Game.MyGame;
 import EBP.Policy;
 import EBP.Population;
 
+import java.util.HashMap;
 import java.util.Random;
+import java.util.stream.Stream;
 
 /**
  * Created by bakanaouji on 2016/07/20.
@@ -16,8 +18,8 @@ public class SAPGA {
 	 * コンストラクタ．
 	 *
 	 * @param aRandom         乱数生成器
-	 * @param aGame           ゲーム
-	 * @param aAgent          エージェント
+	 * @param aGames          ゲーム
+	 * @param aAgents         エージェント
 	 * @param aPopulationSize 集団サイズ
 	 * @param aNumOffspring   子の政策の生成数
 	 * @param aMinSize        政策の事例の最小数
@@ -25,20 +27,20 @@ public class SAPGA {
 	 * @param aSelectionR     親の政策の事例の継承確率
 	 * @param aMutationR      事例の突然変異確率
 	 */
-	public SAPGA(final Random aRandom, final MyGame aGame, final Agent aAgent, final int aPopulationSize,
+	public SAPGA(final Random aRandom, final MyGame[] aGames, final Agent[] aAgents, final int aPopulationSize,
 							 final int aNumOffspring, final int aMinSize, final int aMaxSize, final double aSelectionR,
 							 final double aMutationR) {
 		mRandom = aRandom;
 		mCrossing = new CrossingOperator(aRandom);
 		mRefresh = new RefreshOperator(aRandom);
-		mGame = aGame;
-		mAgent = aAgent;
+		mGames = aGames;
+		mAgents = aAgents;
 		mGeneration = 0;
 		mCntEval = 0;
 		mPopulation = new Population();
-		mGame.initializePopulation(mPopulation, aPopulationSize, aMinSize, aMaxSize);
+		mGames[0].initializePopulation(mPopulation, aPopulationSize, aMinSize, aMaxSize);
 		for (int i = 0; i < aPopulationSize; ++i) {
-			mPopulation.policy(i).evaluationValue(mGame.evaluate(mPopulation.policy(i), mAgent));
+			mPopulation.policy(i).evaluationValue(mGames[i].evaluate(mPopulation.policy(i), mAgents[i]));
 		}
 		mCntEval += aPopulationSize;
 		// パラメータ
@@ -82,15 +84,23 @@ public class SAPGA {
 			System.arraycopy(offspringArray[i], 0, family[i], 2, 2 + mNumOffspring - 2);
 		}
 		// 家族の各政策の評価値を得る
+		HashMap<Policy, MyGame> mapGame = new HashMap<>();
+		HashMap<Policy, Agent> mapAgent = new HashMap<>();
 		for (Policy[] policies : family) {
 			for (Policy policy : policies) {
 				// 貢献度リセット
 				for (int k = 0; k < policy.size(); k++) {
 					policy.exemplar(k).activeCount(0);
 				}
-				policy.evaluationValue(mGame.evaluate(policy,
-								mAgent));
 			}
+			mapGame.clear();
+			mapAgent.clear();
+			for (int i = 0; i < mNumOffspring + 2; ++i) {
+				mapGame.put(policies[i], mGames[i]);
+				mapAgent.put(policies[i], mAgents[i]);
+			}
+			Stream.of(policies).parallel().forEach(policy -> policy.evaluationValue(mapGame.get(policy).evaluate(policy,
+							mapAgent.get(policy))));
 		}
 		for (int h = 0; h < family.length; h++) {
 			// 評価値の順に家族内の政策をソート
@@ -106,11 +116,14 @@ public class SAPGA {
 			}
 		}
 		// 家族内の最良政策を集団に追加
+		int index = 0;
 		for (Policy[] policies : family) {
 			mPopulation.add(policies[0]);
 			final Policy bestClone = policies[0].clone();
 			mRefresh.refreshPolicy(bestClone, mMutationR);
+			bestClone.evaluationValue(mGames[index].evaluate(bestClone, mAgents[index]));
 			mPopulation.add(bestClone);
+			++index;
 		}
 		// 世代数を1増加
 		++mGeneration;
@@ -127,7 +140,6 @@ public class SAPGA {
 	public double meanEvaluationValue() {
 		double meanEval = 0.0;
 		for (int i = 0; i < mPopulationSize; ++i) {
-			mPopulation.policy(i).evaluationValue(mGame.evaluate(mPopulation.policy(i), mAgent));
 			meanEval += mPopulation.policy(i).evaluationValue();
 		}
 		return meanEval / (double) mPopulationSize;
@@ -175,9 +187,9 @@ public class SAPGA {
 	// リフレッシュオペレータ
 	private final RefreshOperator mRefresh;
 	// ゲーム
-	private final MyGame mGame;
+	private final MyGame[] mGames;
 	// エージェント
-	private final Agent mAgent;
+	private final Agent[] mAgents;
 	// 世代数
 	private int mGeneration;
 	// 評価回数

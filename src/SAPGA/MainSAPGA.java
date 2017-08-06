@@ -14,12 +14,17 @@ import java.util.Random;
 public class MainSAPGA {
 	public MainSAPGA() {
 		// 乱数シードを記録
+		System.out.println("seed : " + mSeed);
 		Logger.writeTo("../log/seed.csv", false, mSeed);
 		// 初期化
 		mRandom = new Random(mSeed);
-		mAgent = new Agent();
-		mGame = new MyGame(mRandom, 1, mSpearMaxNum, false);
-		mSapga = new SAPGA(mRandom, mGame, mAgent, mPopulationSize, mNumOffspring, mMinSize, mMaxSize, mSelectionR,
+		mAgents = new Agent[Math.max(mNumOffspring + 2, mPopulationSize)];
+		mGames = new MyGame[Math.max(mNumOffspring + 2, mPopulationSize)];
+		for (int i = 0; i < Math.max(mNumOffspring + 2, mPopulationSize); ++i) {
+			mAgents[i] = new Agent();
+			mGames[i] = new MyGame(new Random(mRandom.nextLong()), 1, mSpearMaxNum, false);
+		}
+		mSapga = new SAPGA(mRandom, mGames, mAgents, mPopulationSize, mNumOffspring, mMinSize, mMaxSize, mSelectionR,
 						mMutationR);
 		mTotalBestPolicy = new Policy();
 		Logger.writeTo("../log/eval.csv", false, ",generation,cntEval,bestEval,meanEval");
@@ -31,11 +36,12 @@ public class MainSAPGA {
 			// 集団内の最良の政策
 			final Policy bestPolicy = mSapga.bestPolicy();
 			// ログを標準出力
-			System.out.println("generation, " + mSapga.generation() +
-							", cntEval, " + mSapga.evalCount() +
-							", bestEval, " + bestPolicy.evaluationValue() +
-							", meanEval, " + meanEval);
-			Logger.writeTo("../log/eval.csv", true, mSapga.generation() + "," + mSapga.generation() + "," + mSapga.evalCount() +
+			System.out.println("generation : " + mSapga.generation() +
+							", cntEval : " + mSapga.evalCount() +
+							", bestEval :  " + bestPolicy.evaluationValue() +
+							", meanEval : " + meanEval);
+			Logger.writeTo("../log/eval.csv", true, mSapga.generation() + "," + mSapga.generation() + "," + mSapga.evalCount
+							() +
 							"," + bestPolicy.evaluationValue() + "," + meanEval);
 			// 数世代ごとに最良の政策を記録
 			if (mSapga.generation() % 10 == 0) {
@@ -74,14 +80,14 @@ public class MainSAPGA {
 	// ゲームのパラメータ
 	private final int mSpearMaxNum = 5;  // ヤリの最大数
 	// 乱数シード
-	//	private final long mSeed = new Random().nextLong();
-	private final long mSeed = -5456963796592331010L;
+//	private final long mSeed = new Random().nextLong();
+		private final long mSeed = 3059825659401587619L;
 	// 乱数生成器
 	private final Random mRandom;
 	// エージェント
-	private final Agent mAgent;
+	private final Agent[] mAgents;
 	// ゲーム
-	private final MyGame mGame;
+	private final MyGame[] mGames;
 	// SAP-GA
 	private final SAPGA mSapga;
 	// 探索を通して最も評価値が良かった政策
