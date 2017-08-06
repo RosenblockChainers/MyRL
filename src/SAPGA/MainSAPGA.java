@@ -14,7 +14,7 @@ import java.util.Random;
 public class MainSAPGA {
 	public MainSAPGA() {
 		// 乱数シードを記録
-		Logger.writeTo("log/seed.csv", false, mSeed);
+		Logger.writeTo("../log/seed.csv", false, mSeed);
 		// 初期化
 		mRandom = new Random(mSeed);
 		mAgent = new Agent();
@@ -22,7 +22,7 @@ public class MainSAPGA {
 		mSapga = new SAPGA(mRandom, mGame, mAgent, mPopulationSize, mNumOffspring, mMinSize, mMaxSize, mSelectionR,
 						mMutationR);
 		mTotalBestPolicy = new Policy();
-		Logger.writeTo("log/eval.csv", false, ",generation,cntEval,bestEval,meanEval");
+		Logger.writeTo("../log/eval.csv", false, ",generation,cntEval,bestEval,meanEval");
 
 		// 打ち切りまで探索を実行
 		while (mSapga.evalCount() < mAbortCondition) {
@@ -35,11 +35,11 @@ public class MainSAPGA {
 							", cntEval, " + mSapga.evalCount() +
 							", bestEval, " + bestPolicy.evaluationValue() +
 							", meanEval, " + meanEval);
-			Logger.writeTo("log/eval.csv", true, mSapga.generation() + "," + mSapga.generation() + "," + mSapga.evalCount() +
+			Logger.writeTo("../log/eval.csv", true, mSapga.generation() + "," + mSapga.generation() + "," + mSapga.evalCount() +
 							"," + bestPolicy.evaluationValue() + "," + meanEval);
 			// 数世代ごとに最良の政策を記録
 			if (mSapga.generation() % 10 == 0) {
-				Logger.writeTo("log/policy_gen" + mSapga.generation() + ".csv", false, bestPolicy);
+				Logger.writeTo("../log/policy_gen" + mSapga.generation() + ".csv", false, bestPolicy);
 			}
 			// 打ち切り評価値を超えた政策がサンプルされたら，探索を終了
 			if (bestPolicy.evaluationValue() >= mAbortEvalValue) {
@@ -54,7 +54,7 @@ public class MainSAPGA {
 			}
 		}
 		// 探索を通して最良の政策のログを書き込み
-		Logger.writeTo("log/policy.csv", false, mTotalBestPolicy);
+		Logger.writeTo("../log/policy.csv", false, mTotalBestPolicy);
 	}
 
 	public static void main(final String[] aArgs) {

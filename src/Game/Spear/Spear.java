@@ -38,7 +38,7 @@ public class Spear {
 		mRotate = new Rotate(rot);
 		// 画像読み込み
 		if (mComp.viewer().paintPanel() != null) {
-			mImage = mComp.viewer().paintPanel().getToolkit().getImage("resource/Image/spear.png");
+			mImage = mComp.viewer().paintPanel().getToolkit().getImage("../resource/Image/spear.png");
 		} else {
 			mImage = null;
 		}

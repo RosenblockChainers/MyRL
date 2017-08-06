@@ -42,7 +42,7 @@ public class Hero {
 		mRotate = new Rotate(aRot);
 		// 画像読み込み
 		if (mComp.viewer().paintPanel() != null) {
-			mImage = mComp.viewer().paintPanel().getToolkit().getImage("resource/Image/hero.png");
+			mImage = mComp.viewer().paintPanel().getToolkit().getImage("../resource/Image/hero.png");
 		} else {
 			mImage = null;
 		}

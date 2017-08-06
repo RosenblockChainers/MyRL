@@ -23,7 +23,7 @@ public class Viewer {
 		// 政策
 		final Policy policy = new Policy();
 		// ファイル読み込み
-		Logger.readFrom("log/policy.csv", policy);
+		Logger.readFrom("../log/policy.csv", policy);
 		// ゲーム
 		final MyGame game = new MyGame(random, 1, 5, true);
 		System.out.println("eval : " + policy.evaluationValue());

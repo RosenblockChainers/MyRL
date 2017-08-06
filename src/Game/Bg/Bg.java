@@ -17,7 +17,7 @@ public class Bg {
 		mComp = aComp;
 		// 画像読み込み
 		if (mComp.viewer().paintPanel() != null) {
-			mImage = mComp.viewer().paintPanel().getToolkit().getImage("resource/Image/bg.png");
+			mImage = mComp.viewer().paintPanel().getToolkit().getImage("../resource/Image/bg.png");
 		} else {
 			mImage = null;
 		}
