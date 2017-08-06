@@ -9,14 +9,21 @@ import java.util.Random;
 
 /**
  * Created by bakanaouji on 2016/07/20.
+ * SAPGAを表すクラス．
  */
 public class SAPGA {
 	/**
 	 * コンストラクタ．
 	 *
-	 * @param aRandom 乱数生成器
-	 * @param aGame   ゲーム
-	 * @param aAgent  エージェント
+	 * @param aRandom         乱数生成器
+	 * @param aGame           ゲーム
+	 * @param aAgent          エージェント
+	 * @param aPopulationSize 集団サイズ
+	 * @param aNumOffspring   子の政策の生成数
+	 * @param aMinSize        政策の事例の最小数
+	 * @param aMaxSize        政策の事例の最大数
+	 * @param aSelectionR     親の政策の事例の継承確率
+	 * @param aMutationR      事例の突然変異確率
 	 */
 	public SAPGA(final Random aRandom, final MyGame aGame, final Agent aAgent, final int aPopulationSize,
 							 final int aNumOffspring, final int aMinSize, final int aMaxSize, final double aSelectionR,
