@@ -33,7 +33,7 @@ public class MainSAPGA {
 			longLogger.writeTo("../log/eval.csv", false, ",generation,cntEval,bestEval,meanEval");
 			// 打ち切りまで探索を実行
 			while (mSapga.evalCount() < mAbortCondition) {
-				// 集団の平均評価位t
+				// 集団の平均評価値
 				final double meanEval = mSapga.meanEvaluationValue();
 				// 集団内の最良の政策
 				final Policy bestPolicy = mSapga.bestPolicy();
