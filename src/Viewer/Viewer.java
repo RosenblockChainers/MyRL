@@ -3,7 +3,7 @@ package Viewer;
 import Agent.Agent;
 import Game.MyGame;
 import EBP.Policy;
-import Util.Log.Logger;
+import Util.Log.ShortLogger;
 
 import java.util.Random;
 
@@ -23,7 +23,7 @@ public class Viewer {
 		// 政策
 		final Policy policy = new Policy();
 		// ファイル読み込み
-		Logger.readFrom("../log/policy_gen410.csv", policy);
+		ShortLogger.readFrom("../log/policy_gen410.csv", policy);
 		// ゲーム
 		final MyGame game = new MyGame(random, 5, true);
 		System.out.println("eval : " + policy.evaluationValue());

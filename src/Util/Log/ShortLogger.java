@@ -4,57 +4,11 @@ import java.io.*;
 
 /**
  * Created by bakanaouji on 2017/08/06.
- * ログ書き込みの便利関数．
+ * ログ書き込みの便利関数群．
+ * 書き込み後，すぐにファイルをクローズする．
+ * １つのみのデータなど，短い系列のデータを書き込むのに便利．
  */
-public class Logger {
-	/**
-	 * 数値を簡単に書き込める便利メソッド．
-	 *
-	 * @param aFileName ファイルパス
-	 * @param aAppend   追加で記録をするかどうか
-	 * @param aLog      書き込む内容
-	 */
-	public static void writeTo(
-					final String aFileName, final boolean aAppend, final long aLog) {
-		try (final PrintWriter pw = new PrintWriter(new FileWriter(aFileName, aAppend))) {
-			pw.println(aLog);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * 数値を簡単に書き込める便利メソッド．
-	 *
-	 * @param aFileName ファイルパス
-	 * @param aAppend   追加で記録をするかどうか
-	 * @param aLog      書き込む内容
-	 */
-	public static void writeTo(
-					final String aFileName, final boolean aAppend, final double aLog) {
-		try (final PrintWriter pw = new PrintWriter(new FileWriter(aFileName, aAppend))) {
-			pw.println(aLog);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * 数値を簡単に書き込める便利メソッド．
-	 *
-	 * @param aFileName ファイルパス
-	 * @param aAppend   追加で記録をするかどうか
-	 * @param aLog      書き込む内容
-	 */
-	public static void writeTo(
-					final String aFileName, final boolean aAppend, final int aLog) {
-		try (final PrintWriter pw = new PrintWriter(new FileWriter(aFileName, aAppend))) {
-			pw.println(aLog);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+public class ShortLogger {
 	/**
 	 * 文字列を簡単に書き込める便利メソッド．
 	 *
