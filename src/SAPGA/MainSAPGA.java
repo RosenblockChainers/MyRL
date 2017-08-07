@@ -1,8 +1,8 @@
 package SAPGA;
 
 import Agent.Agent;
-import Game.MyGame;
 import EBP.Policy;
+import Game.MyGame;
 import Util.Log.LongLogger;
 import Util.Log.ShortLogger;
 
@@ -13,30 +13,43 @@ import java.util.Random;
  * SAPGAによる学習を実行するクラス．
  */
 public class MainSAPGA {
+	/**
+	 * コンストラクタ
+	 */
 	public MainSAPGA() {
 		// 乱数シードを記録
 		System.out.println("seed : " + mSeed);
 		ShortLogger.writeTo("../log/seed.csv", false, mSeed + "");
 		// 初期化
-		mRandom = new Random(mSeed);
-		mAgents = new Agent[Math.max(mNumOffspring + 2, mPopulationSize)];
-		mGames = new MyGame[Math.max(mNumOffspring + 2, mPopulationSize)];
+		initialize();
+		// 探索を実行
+		run();
+	}
+
+	/**
+	 * 初期化
+	 */
+	public void initialize() {
 		for (int i = 0; i < Math.max(mNumOffspring + 2, mPopulationSize); ++i) {
 			mAgents[i] = new Agent();
 			mGames[i] = new MyGame(new Random(mRandom.nextLong()), mSpearMaxNum, false);
 		}
 		mSapga = new SAPGA(mRandom, mGames, mAgents, mPopulationSize, mNumOffspring, mMinSize, mMaxSize, mSelectionR,
 						mMutationR);
-		mTotalBestPolicy = new Policy();
+	}
+
+	/**
+	 * 探索を実行
+	 */
+	public void run() {
 		try (LongLogger longLogger = new LongLogger()) {
 			// ログ書き込み
 			longLogger.writeTo("../log/eval.csv", false, ",generation,cntEval,bestEval,meanEval");
 			// 打ち切りまで探索を実行
-			while (mSapga.evalCount() < mAbortCondition) {
+			Policy bestPolicy = mSapga.bestPolicy(); // 集団内の最良の政策
+			while (mSapga.evalCount() < mAbortCondition && bestPolicy.evaluationValue() < mAbortEvalValue) {
 				// 集団の平均評価値
 				final double meanEval = mSapga.meanEvaluationValue();
-				// 集団内の最良の政策
-				final Policy bestPolicy = mSapga.bestPolicy();
 				// ログを標準出力
 				System.out.println("generation : " + mSapga.generation() +
 								", cntEval : " + mSapga.evalCount() +
@@ -48,23 +61,20 @@ public class MainSAPGA {
 				if (mSapga.generation() % 10 == 0) {
 					ShortLogger.writeTo("../log/policy_gen" + mSapga.generation() + ".csv", false, bestPolicy);
 				}
-				// 打ち切り評価値を超えた政策がサンプルされたら，探索を終了
-				if (bestPolicy.evaluationValue() >= mAbortEvalValue) {
-					break;
-				}
 				// 一反復分探索を実行
 				mSapga.doOneIteration();
+				bestPolicy = mSapga.bestPolicy();
 				// 探索を通して最良の政策を更新
 				if (Double.isNaN(mTotalBestPolicy.evaluationValue()) || mTotalBestPolicy.evaluationValue() < bestPolicy
 								.evaluationValue()) {
 					mTotalBestPolicy = bestPolicy;
 				}
 			}
+			// 探索を通して最良の政策のログを書き込み
+			ShortLogger.writeTo("../log/policy.csv", false, mTotalBestPolicy);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// 探索を通して最良の政策のログを書き込み
-		ShortLogger.writeTo("../log/policy.csv", false, mTotalBestPolicy);
 	}
 
 	public static void main(final String[] aArgs) {
@@ -87,13 +97,13 @@ public class MainSAPGA {
 //	private final long mSeed = new Random().nextLong();
 	private final long mSeed = -829656541046703542L;
 	// 乱数生成器
-	private final Random mRandom;
+	private final Random mRandom = new Random(mSeed);
 	// エージェント
-	private final Agent[] mAgents;
+	private final Agent[] mAgents = new Agent[Math.max(mNumOffspring + 2, mPopulationSize)];
 	// ゲーム
-	private final MyGame[] mGames;
+	private final MyGame[] mGames = new MyGame[Math.max(mNumOffspring + 2, mPopulationSize)];
 	// SAP-GA
-	private final SAPGA mSapga;
+	private SAPGA mSapga;
 	// 探索を通して最も評価値が良かった政策
-	private Policy mTotalBestPolicy;
+	private Policy mTotalBestPolicy = new Policy();
 }

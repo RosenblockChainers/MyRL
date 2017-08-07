@@ -33,11 +33,8 @@ public class LongLogger implements AutoCloseable {
 			}
 		}
 		mPwMap.get(aFileName).println(aLog);
+		mPwMap.get(aFileName).flush();
 	}
-
-
-	// PrintWriterのハッシュマップ．
-	private HashMap<String, PrintWriter> mPwMap;
 
 	/**
 	 * ファイルをクローズする．
@@ -48,4 +45,7 @@ public class LongLogger implements AutoCloseable {
 			pw.close();
 		}
 	}
+
+	// PrintWriterのハッシュマップ．
+	private HashMap<String, PrintWriter> mPwMap;
 }
