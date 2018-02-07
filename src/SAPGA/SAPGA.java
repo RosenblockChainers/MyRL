@@ -132,7 +132,7 @@ public class SAPGA {
 		for (Policy[] policies : family) {
 			mPopulation.add(policies[0]);
 			final Policy bestClone = policies[0].clone();
-			mRefresh.refreshPolicy(bestClone, mMutationR);
+			mRefresh.refreshPolicy(bestClone, mMutationR, mGames[index].actionSize());
 			mapGame.put(bestClone, mGames[index]);
 			mapAgent.put(bestClone, mAgents[index]);
 			mPopulation.add(bestClone);

@@ -29,6 +29,14 @@ public class MyGame {
 	}
 
 	/**
+	 * 取り得る行動の数を返すメソッド．
+	 * @return 行動数
+	 */
+	public int actionSize() {
+		return mActionSize;
+	}
+
+	/**
 	 * 描画を行うメソッド．
 	 * コンポーネントの情報を描画．
 	 */

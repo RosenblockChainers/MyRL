@@ -24,15 +24,16 @@ public class RefreshOperator {
 	/**
 	 * 政策のリフレッシュ（再初期化）を行うメソッド．
 	 *
-	 * @param aPolicy 政策
-	 * @param aR      再初期化の確率
+	 * @param aPolicy     政策
+	 * @param aR          再初期化の確率
+	 * @param aActionSize 行動数
 	 */
-	public void refreshPolicy(final Policy aPolicy,final  double aR) {
+	public void refreshPolicy(final Policy aPolicy, final double aR, final int aActionSize) {
 		// 政策の事例の内，参照されていない事例を確率rで再初期化
 		for (int i = 0; i < aPolicy.size(); i++) {
 			if (aPolicy.exemplar(i).activeCount() < 1e-10
 							&& mRandom.nextDouble() <= aR) {
-				randomize(aPolicy.exemplar(i));
+				randomize(aPolicy.exemplar(i), aActionSize);
 			}
 		}
 	}
@@ -41,12 +42,14 @@ public class RefreshOperator {
 	 * 事例を再初期化するメソッド．
 	 *
 	 * @param aExem 事例
+	 * @param aActionSize 行動数
 	 */
-	private void randomize(final Exemplar aExem) {
+	private void randomize(final Exemplar aExem, final int aActionSize) {
 		final State state = aExem.state();
 		for (int i = 0; i < state.dimension(); ++i) {
 			state.value(i, mRandom.nextDouble());
 		}
+		aExem.action(mRandom.nextInt(aActionSize));
 	}
 
 	// 乱数生成器

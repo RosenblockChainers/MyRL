@@ -15,7 +15,7 @@ public class Viewer {
 	public static void main(final String[] aArgs) {
 		// 乱数生成器
 //		final long seed = new Random().nextLong();
-		final long seed = -4660551050017894761L;
+		final long seed = 1210441377699385552L;
 		System.out.println("seed : " + seed);
 		final Random random = new Random(seed);
 		// エージェント

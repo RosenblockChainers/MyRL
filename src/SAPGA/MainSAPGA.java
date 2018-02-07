@@ -95,7 +95,7 @@ public class MainSAPGA {
 	private final int mSpearMaxNum = 5;  // ヤリの最大数
 	// 乱数シード
 //	private final long mSeed = new Random().nextLong();
-	private final long mSeed = -829656541046703542L;
+	private final long mSeed = 2614397596947913191L;
 	// 乱数生成器
 	private final Random mRandom = new Random(mSeed);
 	// エージェント
