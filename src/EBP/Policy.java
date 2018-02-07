@@ -140,10 +140,10 @@ public class Policy implements ReadWriter, Cloneable {
 	public boolean hasExemplar(final Exemplar aExem) {
 		for (Exemplar exemplar : mExemplars) {
 			if (exemplar.equals(aExem)) {
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	/**

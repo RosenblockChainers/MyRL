@@ -42,7 +42,7 @@ public class CrossingOperator {
 				// 親1の事例を確率rで追加，既に含まれている事例ならば追加しない
 				for (int j = 0; j < aParents[0].size(); j++) {
 					if (mRandom.nextDouble() <= aR) {
-						if (aOffspring[i].hasExemplar(aParents[0].exemplar(j))) {
+						if (!aOffspring[i].hasExemplar(aParents[0].exemplar(j))) {
 							aOffspring[i].add(aParents[0].exemplar(j).clone());
 						}
 					}
@@ -50,7 +50,7 @@ public class CrossingOperator {
 				// 親2の事例を確率1-rで追加，既に含まれている事例ならば追加しない
 				for (int j = 0; j < aParents[1].size(); j++) {
 					if (mRandom.nextDouble() <= (1.0 - aR)) {
-						if (aOffspring[i].hasExemplar(aParents[1].exemplar(j))) {
+						if (!aOffspring[i].hasExemplar(aParents[1].exemplar(j))) {
 							aOffspring[i].add(aParents[1].exemplar(j).clone());
 						}
 					}
